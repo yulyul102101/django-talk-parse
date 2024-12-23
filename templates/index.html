@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container py-5">
+
+        <!-- Audio Upload Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">Upload an Audio File</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_audio_file" class="form-label">Audio File</label>
+                        <input type="file" name="audio_file" id="id_audio_file" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Analysis Results -->
+        {% if original_audio %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">Analysis Results</h2>
+                <p><strong>Phishing Judgment:</strong>
+                    {% if original_audio.is_phishing == 1 %} 보이스피싱
+                    {% elif original_audio.is_phishing == 0 %} 정상 통화
+                    {% else %} 판단 어려움
+                    {% endif %}
+                </p>
+                <p><strong>Reason:</strong> {{ original_audio.phishing_reason }}</p>
+            </div>
+        </div>
+
+        <!-- Segments List -->
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Audio Segments</h2>
+
+                <!-- Download Options -->
+                <form method="post" action="/download/" onsubmit="return validateDownloadOptions()">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Download Options:</label><br>
+                        <input type="checkbox" name="download_type" value="text" id="download_text">
+                        <label for="download_text">Text</label><br>
+                        <input type="checkbox" name="download_type" value="wav" id="download_wav">
+                        <label for="download_wav">WAV</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">WAV Download Mode:</label><br>
+                        <input type="radio" name="wav_mode" value="individual" id="individual_files" checked>
+                        <label for="individual_files">Separate Files</label><br>
+                        <input type="radio" name="wav_mode" value="merged" id="merged_file">
+                        <label for="merged_file">Single Merged File</label>
+                    </div>
+
+                    <!-- Select Options -->
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="selectAll()">Select All</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="deselectAll()">Deselect All</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK0')">Select SPK0</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK1')">Select SPK1</button>
+                    </div>
+
+                    <ul class="list-group">
+                        {% for segment in segments %}
+                        <li class="list-group-item">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <input type="checkbox" name="segments" value="{{ segment.id }}" id="segment_{{ segment.segment_index }}" class="segment-checkbox" data-speaker="{{ segment.speaker }}">
+                                    <label for="segment_{{ segment.segment_index }}"><strong>Segment {{ segment.segment_index }}</strong></label>
+                                    <p><strong>Speaker:</strong> {{ segment.speaker }}</p>
+                                    <p><strong>Transcription:</strong> {{ segment.transcription }}</p>
+                                    <p><strong>Start Time:</strong> {{ segment.start_time }}s</p>
+                                    <p><strong>End Time:</strong> {{ segment.end_time }}s</p>
+                                </div>
+                                <audio controls>
+                                    <source src="{{ segment.audio_file.url }}" type="audio/wav">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <button type="submit" class="btn btn-primary mt-3">Download Selected</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function selectAll() {
+            document.querySelectorAll('.segment-checkbox').forEach(checkbox => checkbox.checked = true);
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.segment-checkbox').forEach(checkbox => checkbox.checked = false);
+        }
+
+        function selectSPK(speaker) {
+            document.querySelectorAll('.segment-checkbox').forEach(checkbox => {
+                checkbox.checked = checkbox.dataset.speaker === speaker;
+            });
+        }
+    </script>
+</body>
+</html>
