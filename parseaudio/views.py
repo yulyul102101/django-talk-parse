@@ -30,7 +30,7 @@ class AudioAnalysisView(View):
                 create_date=timezone.now(),
             )
 
-            audio_path = audio_file.temporary_file_path()
+            audio_path = original_audio.audio_file.path
 
             try:
                 transcripts = parse_audio(audio_path)
@@ -65,7 +65,7 @@ class AudioAnalysisView(View):
             except ValueError as ve:
                 return JsonResponse({"error": str(ve)}, status=400)
             except Exception as e:
-                return JsonResponse({"error": "예기치 않은 오류가 발생했습니다."}, status=500)
+                return JsonResponse({"error": str(e)}, status=500)
 
         return render(request, self.template_name, {"form": form})
 
