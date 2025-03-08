@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  whisperllm:
+    image: whis_llm
+    build: ollama_server
+    container_name: Whisper_LLM
+    ports:
+      - "11434:11434"  # Ollama 기본 포트
+    volumes:
+      - /mnt/e:/data  # 호스트의 /data를 컨테이너의 /data로 직접 마운트
+    environment:
+      - OLLAMA_BASE_URL=http://localhost:11434
+    restart: unless-stopped
+    command: tail -f /dev/null
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  django_server:
+    image: django_call_analysis
+    build: django_server
+    container_name: Django_call_analysis
+    ports:
+      - "17777:17777"
+    volumes:
+      - /mnt/e:/data  # 호스트의 /data를 컨테이너의 /data로 직접 마운트
+    environment:
+      - OLLAMA_BASE_URL=http://localhost:11434
+    restart: unless-stopped
+    command: tail -f /dev/null

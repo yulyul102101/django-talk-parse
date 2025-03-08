@@ -4,9 +4,9 @@ import sys
 # voice_phishing 디렉토리를 시스템 경로에 추가
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from parseaudio.parsing.transcribe_audio import WhisperTranscriber
-from parseaudio.parsing.analyze_text import VoicePhishingDetector
-from parseaudio.parsing.diarize_speaker import SpeakerDiarizer
+from parseaudio.parsing.old.transcribe_audio import WhisperTranscriber
+from parseaudio.parsing.old.analyze_text import VoicePhishingDetector
+from parseaudio.parsing.old.diarize_speaker import SpeakerDiarizer
 
 def test_voice_phishing_detection(audio_file_path):
     # SpeakerDiarizer 인스턴스 생성 및 화자 구분 수행

@@ -96,10 +96,10 @@ class WhisperTranscriber:
         return formatted_text
 
 if __name__ == "__main__":
-    from diarize_speaker import SpeakerDiarizer
+    from parseaudio.parsing.old.diarize_speaker import SpeakerDiarizer
 
     # 오디오 파일 및 화자 구분 정보 불러오기
-    audio_file = "test/audio.wav"
+    audio_file = "../test/audio.wav"
     diarizer = SpeakerDiarizer()
     diarization_results = diarizer.process_audio(audio_file)
     segments = diarizer.get_results_as_list(diarization_results)

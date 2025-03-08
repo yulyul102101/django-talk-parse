@@ -7,9 +7,9 @@ from django.core.files.base import ContentFile
 # voice_phishing 디렉토리를 시스템 경로에 추가
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from parseaudio.parsing.transcribe_audio import WhisperTranscriber
-from parseaudio.parsing.analyze_text import VoicePhishingDetector
-from parseaudio.parsing.diarize_speaker import SpeakerDiarizer
+from parseaudio.parsing.old.transcribe_audio import WhisperTranscriber
+from parseaudio.parsing.old.analyze_text import VoicePhishingDetector
+from parseaudio.parsing.old.diarize_speaker import SpeakerDiarizer
 
 
 diarizer = SpeakerDiarizer()
