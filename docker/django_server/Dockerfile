@@ -2,7 +2,7 @@
 FROM python:3.10-slim
 
 # 작업 디렉토리 설정
-WORKDIR /data/django_talk_parse
+WORKDIR /data/django-talk-parse
 
 # 의존성 설치
 COPY requirements.txt .
