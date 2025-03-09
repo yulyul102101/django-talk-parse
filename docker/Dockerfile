@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     git \
     wget && \
+    curl -fsSL https://ollama.com/install.sh | sh && \
     rm -rf /var/lib/apt/lists/*
 
 # CUDNN 심볼릭 링크 생성
@@ -29,7 +30,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 프로젝트 파일 복사
-COPY ../.. .
+COPY .. .
 
 # LD_LIBRARY_PATH 설정
 RUN echo 'export LD_LIBRARY_PATH=/opt/conda/lib/python3.11/site-packages/nvidia/cudnn/lib:/opt/conda/lib/python3.11/site-packages/ctranslate2.libs:$LD_LIBRARY_PATH' >> /root/.bashrc
