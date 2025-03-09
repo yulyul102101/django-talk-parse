@@ -1,17 +1,15 @@
 version: '3.8'
 
 services:
-  whisperllm:
-    image: whis_llm
+  call_analysis:
+    image: django_call_analysis
     build: .
-    container_name: Whisper_LLM
+    container_name: call_analysis
     ports:
       - "11434:11434"  # Ollama 기본 포트
       - "17777:17777"
     volumes:
       - /data:/data  # 호스트의 /data를 컨테이너의 /data로 직접 마운트
-    environment:
-      - OLLAMA_BASE_URL=http://localhost:11434
     restart: unless-stopped
     command: tail -f /dev/null
     deploy:

@@ -8,7 +8,7 @@ class VoicePhishingDetector:
     def __init__(self, model_name="deepseek-r1:32b"):
         load_dotenv()
         self.model_name = model_name
-        self.ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        self.ollama_base_url = os.getenv("OLLAMA_BASE_URL")
         
     def analyze_conversation(self, transcript: str) -> Dict[str, str]:
         """
