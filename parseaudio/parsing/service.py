@@ -14,7 +14,6 @@ from parseaudio.parsing.diarize_speaker import SpeakerDiarizer
 
 diarizer = SpeakerDiarizer()
 transcriber = LocalFasterWhisperTranscriber()
-detector = VoicePhishingDetector()
 
 
 def bynary_to_content_file(audio_binary, idx):
@@ -61,10 +60,11 @@ def get_sorted_segments(speaker_transcripts: Dict[str, List[Dict]]) -> List[Dict
     return all_segments
 
 
-def detect_audio(transcripts):
+def detect_audio(transcripts, model_name):
     """음성 텍스트를 분석하여 피싱 여부 판단."""
     if not transcripts:
         raise ValueError("분석할 텍스트가 없습니다.")
+    detector = VoicePhishingDetector(model_name=model_name)
     # 음성 인식 결과
     formatted_transcript = transcriber.format_conversation(transcripts)
     # VoicePhishingDetector 인스턴스 생성 및 분석 수행

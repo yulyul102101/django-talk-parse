@@ -44,6 +44,18 @@
             <div class="card-body">
                 <h2 class="card-title">Upload an Audio File</h2>
                 <form method="post" enctype="multipart/form-data" onsubmit="showLoading()">
+                    <div class="mb-3">
+                        <label for="ollama_model" class="form-label">Select Ollama Model</label>
+                        {% if ollama_models %}
+                            <select name="ollama_model" id="ollama_model" class="form-control" required>
+                                {% for model in ollama_models %}
+                                    <option value="{{ model }}">{{ model }}</option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <p class="text-danger">로컬에 설치된 모델이 없습니다.</p>
+                        {% endif %}
+                    </div>
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="id_audio_file" class="form-label">Audio File</label>
