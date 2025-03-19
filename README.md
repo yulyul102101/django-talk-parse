@@ -1,6 +1,6 @@
 $ cd /data
 
-$ git clone https://github.com/yulyul1021/django-talk-parse.git
+$ git clone https://github.com/yulyul102101/django-talk-parse.git
 
 $ cd /data/django-talk-parse
 
