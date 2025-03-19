@@ -107,7 +107,7 @@
                         <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK0')">Select SPK0</button>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK1')">Select SPK1</button>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-3">Download Selected</button>
+                    <button type="submit" class="btn btn-primary mb-3" onclick="validateDownload(event)">Download Selected</button>
                     <ul class="list-group">
                         {% for segment in segments %}
                         <li class="list-group-item">
@@ -128,7 +128,7 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    <button type="submit" class="btn btn-primary mt-3">Download Selected</button>
+                    <button type="submit" class="btn btn-primary mt-3" onclick="validateDownload(event)">Download Selected</button>
                 </form>
             </div>
         </div>
@@ -154,6 +154,16 @@
             document.querySelectorAll('.segment-checkbox').forEach(checkbox => {
                 checkbox.checked = checkbox.dataset.speaker === speaker;
             });
+        }
+
+        function validateDownload(event) {
+            let textChecked = document.getElementById('download_text').checked;
+            let wavChecked = document.getElementById('download_wav').checked;
+
+            if (!textChecked && !wavChecked) {
+                alert("하나 이상의 다운로드 옵션을 선택하세요.");
+                event.preventDefault();  // 폼 제출 방지
+            }
         }
     </script>
 </body>

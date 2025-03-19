@@ -11,31 +11,15 @@ from django.utils import timezone
 from .models import OriginalAudio, SegmentAudio
 from .forms import AudioUploadForm
 from .parsing.service import parse_audio, get_sorted_segments, detect_audio, bynary_to_content_file
+from .utils import get_installed_ollama_models, stop_running_model
 
 class AudioAnalysisView(View):
     template_name = "index.html"
 
-    def get_installed_ollama_models(self):
-        try:
-            result = subprocess.run(["ollama", "list"], capture_output=True, text=True, shell=True)
-            if result.returncode == 0:
-                lines = result.stdout.splitlines()
-                if len(lines) > 1:  # 헤더 제외 후 모델명 추출
-                    models = [line.split()[0] for line in lines[1:] if line.strip()]
-                    return models if models else []
-            else:
-                print(f"Error: ollama list 실행 실패, 코드 {result.returncode}")
-                print(f"출력: {result.stdout}")
-                print(f"오류: {result.stderr}")
-            return []
-        except Exception as e:
-            print(f"예외 발생: {e}")
-            return []
-
 
     def get(self, request):
         form = AudioUploadForm()
-        models = self.get_installed_ollama_models()
+        models = get_installed_ollama_models()
         return render(request, self.template_name, {"form": form, "ollama_models": models})
 
     def post(self, request):
@@ -70,13 +54,14 @@ class AudioAnalysisView(View):
                     new_segment.audio_file.save(f"segment_{idx}.wav", new_segment_file)
                     saved_segments.append(new_segment)
 
+                stop_running_model(model_name=selected_model)
                 detect_res = detect_audio(transcripts, model_name=selected_model)
 
                 original_audio.is_phishing = detect_res["judgment"]
                 original_audio.phishing_reason = detect_res["evidence"]
                 original_audio.save()
 
-                models = self.get_installed_ollama_models()
+                models = get_installed_ollama_models()
                 context = {
                     "original_audio": original_audio,
                     "segments": saved_segments,
@@ -89,7 +74,7 @@ class AudioAnalysisView(View):
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=500)
 
-        models = self.get_installed_ollama_models()
+        models = get_installed_ollama_models()
         return render(request, self.template_name, {"form": form, "ollama_models": models})
 
 
