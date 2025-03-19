@@ -3,7 +3,7 @@ import subprocess
 
 def get_installed_ollama_models():
     try:
-        result = subprocess.run(["ollama", "list"], capture_output=True, text=True, shell=True)
+        result = subprocess.run(["ollama", "list"], capture_output=True, text=True)
         if result.returncode == 0:
             lines = result.stdout.splitlines()
             if len(lines) > 1:  # 헤더 제외 후 모델명 추출
