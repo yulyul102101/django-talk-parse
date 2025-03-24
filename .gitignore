@@ -7,3 +7,4 @@ media/
 .venv
 models/
 transcription_output/
+transcription_output/*
