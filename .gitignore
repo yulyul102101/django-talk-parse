@@ -6,3 +6,4 @@ media/
 .env
 .venv
 models/
+transcription_output/
