@@ -1,7 +1,6 @@
 import io
 import os
 import zipfile
-import subprocess
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
@@ -12,6 +11,7 @@ from .models import OriginalAudio, SegmentAudio
 from .forms import AudioUploadForm
 from .parsing.service import parse_audio, get_sorted_segments, detect_audio, bynary_to_content_file
 from .utils import get_installed_ollama_models, stop_running_model
+
 
 class AudioAnalysisView(View):
     template_name = "index.html"
@@ -24,6 +24,7 @@ class AudioAnalysisView(View):
 
     def post(self, request):
         form = AudioUploadForm(request.POST, request.FILES)
+        num_speakers = int(request.POST.get("num_speakers"))
         selected_model = request.POST.get("ollama_model")  # 사용자가 선택한 모델
 
         if form.is_valid():
@@ -37,7 +38,7 @@ class AudioAnalysisView(View):
             audio_path = original_audio.audio_file.path
 
             try:
-                transcripts = parse_audio(audio_path)
+                transcripts = parse_audio(audio_path, num_speakers)
                 segments = get_sorted_segments(transcripts)
                 saved_segments = []
 
@@ -59,6 +60,7 @@ class AudioAnalysisView(View):
 
                 original_audio.is_phishing = detect_res["judgment"]
                 original_audio.phishing_reason = detect_res["evidence"]
+                original_audio.call_summary = detect_res["call_summary"]
                 original_audio.save()
 
                 models = get_installed_ollama_models()

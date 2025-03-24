@@ -56,6 +56,15 @@
                             <p class="text-danger">로컬에 설치된 모델이 없습니다.</p>
                         {% endif %}
                     </div>
+
+                    <div class="mb-3">
+                        <label for="num_speakers" class="form-label">Number of Speakers</label>
+                        <select name="num_speakers" id="num_speakers" class="form-control" required>
+                            <option value="2">2명</option>
+                            <option value="3">3명</option>
+                        </select>
+                    </div>
+
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="id_audio_file" class="form-label">Audio File</label>
@@ -77,6 +86,7 @@
                     {% endif %}
                 </p>
                 <p><strong>Reason:</strong> {{ original_audio.phishing_reason }}</p>
+                <p><strong>Summary:</strong> {{ original_audio.call_summary }}</p>
             </div>
         </div>
 
@@ -106,6 +116,7 @@
                         <button type="button" class="btn btn-secondary btn-sm" onclick="deselectAll()">Deselect All</button>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK0')">Select SPK0</button>
                         <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK1')">Select SPK1</button>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="selectSPK('SPK2')">Select SPK2</button>
                     </div>
                     <button type="submit" class="btn btn-primary mb-3" onclick="validateDownload(event)">Download Selected</button>
                     <ul class="list-group">

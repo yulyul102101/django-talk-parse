@@ -208,7 +208,8 @@ class LocalFasterWhisperTranscriber:
 
     def transcribe_segments(self, audio_file: str, segments: List[Dict]) -> Dict[str, List[Dict]]:
         """세그먼트별 프롬프트 업데이트 방식으로 음성 인식 수행."""
-        speaker_transcripts = {"SPK0": [], "SPK1": []}
+        # speaker_transcripts = {"SPK0": [], "SPK1": []}
+        speaker_transcripts = {}
         prompt = ""  # 프롬프트 초기화
 
         total_segments = len(segments)
@@ -232,6 +233,10 @@ class LocalFasterWhisperTranscriber:
             prompt += " " + text  # 이전 결과 추가
             if len(prompt) > 200:  # 200자를 초과하면
                 prompt = prompt[-200:]  # 뒤에서 200자만 유지
+
+            speaker = segment['speaker']
+            if speaker not in speaker_transcripts:
+                speaker_transcripts[speaker] = []
 
             # 결과 저장
             speaker_transcripts[segment['speaker']].append({

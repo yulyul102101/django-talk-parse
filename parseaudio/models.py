@@ -22,6 +22,7 @@ class OriginalAudio(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)  # 업로드 날짜 자동 설정
     is_phishing = models.IntegerField(choices=PHISHING_CHOICES, null=True)  # 보이스피싱 여부
     phishing_reason = models.TextField(null=True, blank=True)  # 판단 근거
+    call_summary = models.TextField(null=True, blank=True)  # 통화 요약
 
     # save 오버라이드
     def save(self, *args, **kwargs):

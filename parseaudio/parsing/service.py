@@ -12,7 +12,6 @@ from parseaudio.parsing.analyze_text import VoicePhishingDetector
 from parseaudio.parsing.diarize_speaker import SpeakerDiarizer
 
 
-diarizer = SpeakerDiarizer()
 transcriber = LocalFasterWhisperTranscriber()
 
 
@@ -26,9 +25,10 @@ def bynary_to_content_file(audio_binary, idx):
     return ContentFile(audio_binary, name=f"segment_{idx}.wav")
 
 
-def parse_audio(audio_file):    # 세그먼트 분할
+def parse_audio(audio_file, num_speakers):    # 세그먼트 분할
     """Dummy audio analysis logic."""
     # SpeakerDiarizer 인스턴스 생성 및 화자 구분 수행
+    diarizer = SpeakerDiarizer(num_speakers=num_speakers)
     diarization_results = diarizer.process_audio(audio_file)
     segments = diarizer.get_results_as_list(diarization_results)
 
@@ -67,6 +67,6 @@ def detect_audio(transcripts, model_name):
     detector = VoicePhishingDetector(model_name=model_name)
     # 음성 인식 결과
     formatted_transcript = transcriber.format_conversation(transcripts)
-    # VoicePhishingDetector 인스턴스 생성 및 분석 수행
     result = detector.analyze_conversation(formatted_transcript)
+    result["call_summary"] = detector.summarize_conversation(transcripts)
     return result
