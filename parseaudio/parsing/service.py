@@ -62,12 +62,33 @@ def get_sorted_segments(speaker_transcripts: Dict[str, List[Dict]]) -> List[Dict
     return all_segments
 
 
+def get_text_only_transcripts(transcripts):
+    text_only_transcripts = []
+    for speaker, segments in transcripts.items():
+        for seg in segments:
+            text_only_transcripts.append({
+                "speaker": speaker,
+                "text": seg["text"],
+                "start": seg["start"]  # 정렬용으로만 사용
+            })
+
+    # 시간 순 정렬
+    text_only_transcripts.sort(key=lambda x: x["start"])
+
+    # 정렬된 후 start 제거
+    for seg in text_only_transcripts:
+        del seg["start"]
+
+    return text_only_transcripts
+
+
 def detect_audio(transcripts, model_name):
     """음성 텍스트를 분석하여 피싱 여부 판단."""
     if not transcripts:
         raise ValueError("분석할 텍스트가 없습니다.")
     detector = VoicePhishingDetector(model_name=model_name)
     # 음성 인식 결과
-    result = detector.analyze_conversation(transcripts)
-    print("transcripts: ", transcripts)
+    text_only_transcripts = get_text_only_transcripts(transcripts)
+    result = detector.analyze_conversation(text_only_transcripts)
+    print("transcripts: ", text_only_transcripts)
     return result
