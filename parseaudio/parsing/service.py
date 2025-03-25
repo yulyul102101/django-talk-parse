@@ -3,6 +3,7 @@ import sys
 from typing import Dict, List
 
 from django.core.files.base import ContentFile
+import uuid
 
 # voice_phishing 디렉토리를 시스템 경로에 추가
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -35,8 +36,9 @@ def parse_audio(audio_file, num_speakers):    # 세그먼트 분할
     if not segments:
         raise ValueError("화자 구분에 실패했습니다.")
 
-    # WhisperTranscriber 인스턴스 생성 및 세그먼트별 음성 인식 수행
-    transcripts = transcriber.transcribe_segments(audio_file, segments)
+    request_id = str(uuid.uuid4())
+    # transcribe_segments 호출 시 request_id 전달
+    transcripts = transcriber.transcribe_segments(audio_file, segments, request_id)
     if not transcripts:
         raise ValueError("오디오 텍스트 변환에 실패했습니다.")
     return transcripts
@@ -66,7 +68,6 @@ def detect_audio(transcripts, model_name):
         raise ValueError("분석할 텍스트가 없습니다.")
     detector = VoicePhishingDetector(model_name=model_name)
     # 음성 인식 결과
-    formatted_transcript = transcriber.format_conversation(transcripts)
-    result = detector.analyze_conversation(formatted_transcript)
-    result["call_summary"] = detector.summarize_conversation(transcripts)
+    result = detector.analyze_conversation(transcripts)
+    print("transcripts: ", transcripts)
     return result

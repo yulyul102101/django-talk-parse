@@ -7,7 +7,7 @@ import soundfile as sf
 import librosa
 from typing import List, Tuple, Dict
 import time  # 시간 측정 추가
-
+import uuid
 
 class SpeakerDiarizer:
     def __init__(self, num_speakers=3):
@@ -230,12 +230,17 @@ class SpeakerDiarizer:
         return speaker_segments
 
     def create_padded_segments(self, audio_path: str, segments: List[Dict], pad_seconds: float = 4.0,
-                               output_dir: str = "padded_segments") -> List[Dict]:
+                            output_dir: str = "padded_segments", request_id: str = None) -> List[Dict]:
         """세그먼트를 추출하고 앞뒤로 제로 패딩(무음)을 적용하여 저장합니다."""
         padding_start = time.time()
         print(f"세그먼트 패딩 시작: {padding_start}")
 
-        # 출력 디렉토리 생성
+        # 요청 ID가 없으면 생성
+        if request_id is None:
+            request_id = str(uuid.uuid4())
+
+        # 출력 디렉토리 생성 (요청 ID 포함)
+        output_dir = os.path.join(output_dir, request_id)
         os.makedirs(output_dir, exist_ok=True)
 
         # 원본 오디오 로드
@@ -257,8 +262,8 @@ class SpeakerDiarizer:
             # 앞뒤로 제로 패딩 적용
             padded_audio = np.pad(segment_audio, (pad_samples, pad_samples), 'constant', constant_values=0)
 
-            # 패딩된 세그먼트 저장
-            output_file = os.path.join(output_dir, f"segment_{i:04d}_{segment['speaker']}.wav")
+            # 패딩된 세그먼트 저장 (요청 ID 포함)
+            output_file = os.path.join(output_dir, f"{request_id}_segment_{i:04d}_{segment['speaker']}.wav")
             sf.write(output_file, padded_audio, sr)
 
             # 결과 정보에 추가
@@ -266,9 +271,9 @@ class SpeakerDiarizer:
                 "speaker": segment["speaker"],
                 "original_start": segment["start"],
                 "original_end": segment["end"],
-                "padded_start": segment["start"],  # 원래 시작 시간 유지 (제로패딩은 물리적으로 추가됨)
-                "padded_end": segment["end"],  # 원래 종료 시간 유지 (제로패딩은 물리적으로 추가됨)
-                "duration": (end_sample - start_sample) / sr + pad_seconds * 2,  # 패딩 포함 총 길이
+                "padded_start": segment["start"],
+                "padded_end": segment["end"],
+                "duration": (end_sample - start_sample) / sr + pad_seconds * 2,
                 "file_path": output_file
             })
 
@@ -311,7 +316,7 @@ if __name__ == "__main__":
     print(f"SpeakerDiarizer 초기화 완료: {diarizer_init_time:.4f}초 소요")
 
     # 오디오 파일 경로 지정
-    audio_file = r"E:\hello_E\django-talk-parse-main\django-talk-parse-main\parseaudio\parsing\audio.wav"
+    audio_file = "audio.wav"
 
     # 화자 분리 수행
     process_start_time = time.time()
