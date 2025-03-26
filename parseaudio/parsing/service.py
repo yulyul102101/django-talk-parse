@@ -90,5 +90,5 @@ def detect_audio(transcripts, model_name):
     # 음성 인식 결과
     text_only_transcripts = get_text_only_transcripts(transcripts)
     result = detector.analyze_conversation(text_only_transcripts)
-    print("transcripts: ", text_only_transcripts)
+    # print("transcripts: ", text_only_transcripts)
     return result
